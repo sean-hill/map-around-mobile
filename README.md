@@ -1,4 +1,4 @@
 map-around-mobile
 =================
 
-Find events going on around right from your smartphone.
+Find events going on around you, right from your smartphone.
