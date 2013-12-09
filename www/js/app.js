@@ -1,0 +1,1 @@
+angular.module('maparound', ['ionic', 'ngRoute', 'ngAnimate', 'maparound.services', 'maparound.controllers', 'maparound.directives']);

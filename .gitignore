@@ -1,0 +1,4 @@
+*.keystore
+*.sw*
+platforms/^.*
+www/.sass-cache

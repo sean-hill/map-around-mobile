@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Map Around</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- ionic css -->
+    <link href="css/ionic.css" rel="stylesheet">
+
+    <!-- your app's css -->
+    <link href="css/app.css" rel="stylesheet">
+
+    <!-- ionic/angularjs scripts -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPTuWtdL0JlVUiscO9arznZVHGNmTaWvI&sensor=true"></script>
+    <script src="js/ionic.js"></script>
+    <script src="js/angular/angular.js"></script>
+    <script src="js/angular/angular-animate.js"></script>
+    <script src="js/angular/angular-route.js"></script>
+    <script src="js/angular/angular-touch.js"></script>
+    <script src="js/angular/angular-sanitize.js"></script>
+    <script src="js/ionic-angular.js"></script>
+    <script src="js/min/date-utils.js"></script>
+    <script src="js/min/angular-ui.js"></script>
+    <script src="js/min/alertify.js"></script>
+    <script src="js/min/eventful.js"></script>
+    <script src="js/min/markerCluster.js"></script>
+    <script src="js/min/markerSpider.js"></script>
+
+    <!-- cordova script -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's script -->
+    <script src="js/app.js"></script>
+    <script src="js/directives.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/controllers.js"></script>
+  </head>
+
+  <body ng-app="maparound" ng-controller="AppCtrl">
+
+    <div class="bar bar-header bar-calm">
+      <button class="button button-icon icon ion-ios7-eye" ng-click="resetZoom()"></button>
+      <div class="h1 title">Map Around</div>
+      <button class="button button-icon icon ion-ios7-search" ng-click="openModal()"></button>
+    </div>
+
+    <div class="scroll-content has-header" ng-controller="MapCtrl">
+      <div class="loader" ng-class="{active: showLoader}">
+        <div class="title flasher">{{loadingText}}</div>
+      </div>
+      <div id="map-canvas" class="event-map"></div>
+    </div>
+
+    <script src="js/min/jquery.js"></script>
+    <script id="modal.html" type="text/ng-template">
+      <div class="modal">
+        <header class="bar bar-header bar-calm">
+          <h1 class="title">Find Events</h1>
+          <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeModal()"></button>
+        </header>
+        <content has-header="true">
+          <div class="list">
+            <label class="item item-input">
+              <span class="input-label">Location</span>
+              <input type="text" ng-model="search_form.location.address" placeholder="e.g. Phoenix, AZ" ng-blur="geocodeLocation()">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Keywords</span>
+              <input type="text" ng-model="search_form.keywords" placeholder="Optional">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Radius</span>
+              <input type="number" ng-model="search_form.distance" placeholder="In miles">
+            </label>
+            <div class="padding">
+              <button class="button button-full button-calm" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address}">Search</button>
+            </div>
+          </div>
+        </content>
+      </div>
+    </script>
+
+  </body>
+</html>

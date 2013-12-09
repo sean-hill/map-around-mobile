@@ -1,0 +1,100 @@
+@import "ionic/ionic";
+
+.event-map {
+	height: 100%;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.disabled {
+	opacity: .3;
+}
+
+.loader {
+	position: absolute;
+	top: -$bar-height;
+	z-index: 100;
+	width: 100%;
+	background: white;
+	height: $bar-height;
+	border-bottom: 1px solid $bar-calm-active-border;
+	text-align: center;
+	color: $calm !important;
+	font-size: 15px !important;
+
+	.title {
+		padding-top: 12px;
+	}
+
+	@include transition(all linear 200ms);
+
+	&.active {
+		top: 0px;
+	}
+}
+
+// Map styles //
+.party-info-window {
+  width: 200px;
+  max-height: 300px;
+  margin-right: 30px;
+
+  h1, p {
+    font-family: $font-family-sans-serif;
+  }
+
+  h1 {
+    font-weight: normal;
+    font-size: 20px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #EEE;
+  }
+
+  .party-meta {
+    color: #BBB;
+    margin-top: 5px;
+  }
+
+  .party-link {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .party-content {
+
+  }
+}
+
+.flasher {
+    animation-name: blinker;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+}
+
+@-moz-keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1.0; }
+}
