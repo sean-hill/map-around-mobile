@@ -1,14 +1,18 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, Modal, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $http, Modal, geocoder, eventful) {
 
   $scope.search_form = {location:{}};
 
-
   $scope.geocodeLocation = function() {
+
+    $scope.geocoding = true;
 
     if ($scope.search_form.location.address) {
       geocoder.getGeo({address: $scope.search_form.location.address}, function(data){
+
+        $scope.geocoding = false;
+
         if (data) {
           $scope.search_form.location = data;
           $scope.$apply();
@@ -35,25 +39,22 @@ angular.module('maparound.controllers', [])
     // TODO: WAIT FOR GEOCODE TO BE DONE
     // TODO: Only load a certain number of events, to many locks the phone
 
-    // Just in case the geocoder is still geocoding there address
-    $timeout(function(){
+    if (!$scope.search_form.location.address) {
+      return;
+    }
 
-      if (!$scope.search_form.location.address) {
-        return;
-      }
+    if (!$scope.search_form.distance) $scope.search_form.distance = 5;
 
-      if (!$scope.search_form.distance) $scope.search_form.distance = 5;
+    $scope.closeSearchModal();
 
-      $scope.closeModal();
+    $scope.showLoader = true;
+    $scope.loadingText = "Finding Events";
+    $scope.$apply();
 
-      $scope.showLoader = true;
-      $scope.loadingText = "Finding Events";
+    eventful.search($scope.search_form, 1, function(events, page_count){
+      $scope.$broadcast('eventfulDataChange', {events: events, page_count: page_count});
+    });
 
-      eventful.search($scope.search_form, 1, function(events, page_count){
-        $scope.$broadcast('eventfulDataChange', {events: events, page_count: page_count});
-      });
-
-    })
 
   }
 
@@ -69,11 +70,18 @@ angular.module('maparound.controllers', [])
     $scope.loadingText = val;
   }
 
+  $scope.setInfoPartyContent = function(val) {
+    $scope.eventInfo = val;
+    $scope.$apply();
+  }
 
+  $scope.selectMe = function(elem) {
+    elem.select();
+  }
 
-  // Load the modal from the given template URL for searching events
-  Modal.fromTemplateUrl('modal.html', function(modal) {
-    $scope.modal = modal;
+  // Load search modal
+  Modal.fromTemplateUrl('searchModal.html', function(modal) {
+    $scope.searchModal = modal;
   }, {
     // Use our scope for the scope of the modal to keep it simple
     scope: $scope,
@@ -81,11 +89,29 @@ angular.module('maparound.controllers', [])
     animation: 'slide-in-up'
   });
 
-  $scope.openModal = function() {
-    $scope.modal.show();
+  $scope.openSearchModal = function() {
+    $scope.searchModal.show();
   };
-  $scope.closeModal = function() {
-    $scope.modal.hide();
+  $scope.closeSearchModal = function() {
+    $scope.searchModal.hide();
+  };
+
+  // Load event info modal
+  Modal.fromTemplateUrl('infoModal.html', function(modal) {
+    $scope.infoModal = modal;
+  }, {
+    // Use our scope for the scope of the modal to keep it simple
+    scope: $scope,
+    // The animation we want to use for the modal entrance
+    animation: 'slide-in-up'
+  });
+
+  $scope.openInfoModal = function() {
+    $scope.infoModal.show();
+  };
+
+  $scope.closeInfoModal = function() {
+    $scope.infoModal.hide();
   };
 
 })
@@ -106,6 +132,7 @@ angular.module('maparound.controllers', [])
       center: new google.maps.LatLng(37.09024, -95.7128910),
       zoom: 4,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
+      disableDefaultUI: true,
       mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
         position: google.maps.ControlPosition.TOP_CENTER
@@ -113,7 +140,7 @@ angular.module('maparound.controllers', [])
     });
 
     $scope.partyMap.addListener("zoom_changed", function(){
-      if (infoWindow) infoWindow.close();
+      $scope.closeInfoModal();
     });
 
     $scope.partyMarkers = [];
@@ -122,14 +149,19 @@ angular.module('maparound.controllers', [])
     $scope.setLoadingText("Getting Location");
 
     clientlocation.get(function(location){
+
+      $scope.initiateMapElements();
+
       if (location) {
         $scope.partyMap.setCenter(location);
         $scope.partyMap.setZoom(11);
         $scope.userLocation = location;
         $scope.setSearchFormLocation(location, function(){
-          $scope.initiateMapElements();
           $scope.searchForEvents();  
         });
+      } else {
+        $scope.setLoaderStatus(false);
+        $scope.openSearchModal();
       }
     })
 
@@ -147,16 +179,20 @@ angular.module('maparound.controllers', [])
 
     if (!events.length) {
       alert("No events found, try different criteria");
-      $scope.openModal();
+      $scope.openSearchModal();
       return;
     }
 
     $scope.clearMarkers();
-    markerCluster.clearMarkers();
-    markerSpider.clearMarkers();
+    $scope.clearListeners();
     $scope.placeUserLocationMarker();
 
     var bounds = $scope.addMarkersToMap(events);
+
+    markerSpider.addListener('click', function(marker, event) {
+      $scope.setInfoPartyContent($scope.setPartyInfo(marker.party));
+      $scope.openInfoModal();
+    });
 
     var latlng = $scope.search_form.location.latlng;
     $scope.partyMap.panTo(new google.maps.LatLng(latlng[1], latlng[0]));
@@ -216,9 +252,6 @@ angular.module('maparound.controllers', [])
         keepSpiderfied: true
       }
       markerSpider = new OverlappingMarkerSpiderfier($scope.partyMap, msOptions);
-      markerSpider.addListener('spiderfy', function(markers) {
-        infoWindow.close();
-      })
     }
   }
 
@@ -227,9 +260,15 @@ angular.module('maparound.controllers', [])
       $scope.partyMarkers[i].setMap(null);
     }
     $scope.partyMarkers = [];
+    markerCluster.clearMarkers();
+    markerSpider.clearMarkers();
   }
 
-  $scope.getPartyWindowContent = function(party) {
+  $scope.clearListeners = function() {
+    markerSpider.clearListeners("click");
+  }
+
+  $scope.setPartyInfo = function(party) {
 
     var sD = party.date_time.start_date ? new Date(party.date_time.start_date) : undefined;
     var eD = party.date_time.end_date ? new Date(party.date_time.end_date) : undefined;
@@ -245,28 +284,15 @@ angular.module('maparound.controllers', [])
       timeString = sD.toFormat("H:MI P") + ' to ' + eD.toFormat("H:MI P") + '<br>' + sD.toFormat("MMM D, YYYY");
     }
 
-    var contentString = 
-      '<div class="party-info-window">'+
-        '<h1 class="party-header">' + party.name + '</h1>'+
-        '<p class="party-meta">' + party.location.address + '<br>' + timeString + '</p>' +
-        '<hr>' +
-        '<div class="party-content">'+
-          '<p>' +
-            (party.description ? party.description : 'No description provided') +
-          '</p>' +
-          (party.url ? '<p class="party-link">Link: <a href="' + party.url + '" target="_blank">' + party.url + '</a></p>' : '') 
-        '</div>'+
-    '</div>';
+    party.timeString = timeString;
+    party.description = (party.description ? party.description : "No description provided");
 
-    return contentString;
+    return party;
   }
 
   $scope.addMarkersToMap = function(parties) {
 
     var bounds = new google.maps.LatLngBounds();
-
-    //just in case
-    $scope.initiateMapElements();
 
     angular.forEach(parties, function(party){
       var ll = new google.maps.LatLng(party.location.latlng[1], party.location.latlng[0]);
@@ -277,12 +303,8 @@ angular.module('maparound.controllers', [])
         , title: party.name
       });
 
-      google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.close();
-        infoWindow.setContent($scope.getPartyWindowContent(party));
-        infoWindow.open($scope.partyMap, marker);
-      });
-
+      marker.party = party;
+      markerSpider.addMarker(marker);
       $scope.partyMarkers.push(marker);
 
       bounds.extend(ll);
@@ -290,10 +312,6 @@ angular.module('maparound.controllers', [])
     });
 
     markerCluster.addMarkers($scope.partyMarkers);
-
-    for (var i = 0; i < $scope.partyMarkers.length; i++) {
-      markerSpider.addMarker($scope.partyMarkers[i]);
-    };
 
     return bounds;
   }

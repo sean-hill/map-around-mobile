@@ -32,6 +32,8 @@ angular.module('maparound.services', [])
           clientlocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
           callback(clientlocation);
 
+        }, function(err) {
+          callback(false);
         });
 
       } else {
@@ -85,7 +87,7 @@ angular.module('maparound.services', [])
         , within: search_form.distance
         , page_size: 50
         , page_number: page_number
-        , date: "Next Week"
+        , date: "This Week"
         , mature: "safe"
       };
 

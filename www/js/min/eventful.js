@@ -1,52 +1,3 @@
-/* EVDB JS API (EVDB.API) 0.4 / feedback@eventful.com / 2006-11-30
-
-    See http://api.eventful.com/js/api.changes for a changelog.
-
-    Instructions:
-        - Include the EVDB JS API script in your HTML document like so:
-    <script type="text/javascript" src="http://api.eventful.com/js/api"></script>
-        - Call the EVDB.API.call() function as specified below.
-
-    Format of API Call:
-
-        EVDB.API.call(sMethod, args, fnCallback);
-
-        - sMethod is the API method to call.
-            see: http://api.eventful.com/docs
-        - args is a string or object containing the arguments to pass to the API
-            - string: "x=1&y=2&z=3"
-            - object: {x: 1, y: 2, z:3}
-        - fnCallback is a reference to a function taking a single argument
-            - The only argument to the function will be the data passed back
-                from the API in JS data structures (objects, arrays, etc.).
-
-    Example:
-        var oArgs = {
-            app_key: [your api key],
-            q: "music in San Diego, CA",
-            page_size: 25
-        };
-        EVDB.API.call("/events/search", oArgs, function(oData)
-        {
-            // Note: this relies on the custom toString() methods below
-            // alert(oData.toString());
-        });
-
-        Object.prototype.toString = function()
-        {
-            var s = "{\n";
-            for (var x in this)
-            {
-                s += "\t" + x + ": " + this[x].toString() + "\n";
-            }
-            s += "}";
-            return s;
-        }
-        Array.prototype.toString = function()
-        {
-            return '[' + this.join(", ") + ']';
-        }
-*/
 
 if (window.EVDB === undefined) window.EVDB = {};
 if (EVDB.API === undefined) EVDB.API = {};
@@ -82,7 +33,6 @@ EVDB.API.call = function(sMethod, args, fnCallback)
 
     // create the script element for the api call
     var elScript = document.createElement("script");
-    elScript.type = "text/javascript";
     elScript.src = EVDB.API.URL + sMethod +'?'+ args +"&json_request_id="+
     EVDB.API.idRequest;
 
@@ -94,6 +44,7 @@ EVDB.API.call = function(sMethod, args, fnCallback)
     {
       EVDB.API.elHead = document.getElementsByTagName("head")[0];
     }
+    
     EVDB.API.elHead.appendChild(elScript);
 
   } catch(e) {

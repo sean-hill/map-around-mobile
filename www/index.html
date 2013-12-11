@@ -21,8 +21,6 @@
     <script src="js/angular/angular-sanitize.js"></script>
     <script src="js/ionic-angular.js"></script>
     <script src="js/min/date-utils.js"></script>
-    <script src="js/min/angular-ui.js"></script>
-    <script src="js/min/alertify.js"></script>
     <script src="js/min/eventful.js"></script>
     <script src="js/min/markerCluster.js"></script>
     <script src="js/min/markerSpider.js"></script>
@@ -35,14 +33,15 @@
     <script src="js/directives.js"></script>
     <script src="js/services.js"></script>
     <script src="js/controllers.js"></script>
+
   </head>
 
   <body ng-app="maparound" ng-controller="AppCtrl">
 
     <div class="bar bar-header bar-calm">
-      <button class="button button-icon icon ion-ios7-eye" ng-click="resetZoom()"></button>
+      <button class="button button-icon icon ion-ios7-minus-outline" ng-click="resetZoom()"></button>
       <div class="h1 title">Map Around</div>
-      <button class="button button-icon icon ion-ios7-search" ng-click="openModal()"></button>
+      <button class="button button-icon icon ion-ios7-search" ng-click="openSearchModal()"></button>
     </div>
 
     <div class="scroll-content has-header" ng-controller="MapCtrl">
@@ -52,30 +51,61 @@
       <div id="map-canvas" class="event-map"></div>
     </div>
 
-    <script src="js/min/jquery.js"></script>
-    <script id="modal.html" type="text/ng-template">
+    <script id="searchModal.html" type="text/ng-template">
       <div class="modal">
         <header class="bar bar-header bar-calm">
           <h1 class="title">Find Events</h1>
-          <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeModal()"></button>
+          <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeSearchModal()"></button>
         </header>
         <content has-header="true">
           <div class="list">
-            <label class="item item-input">
-              <span class="input-label">Location</span>
-              <input type="text" ng-model="search_form.location.address" placeholder="e.g. Phoenix, AZ" ng-blur="geocodeLocation()">
-            </label>
-            <label class="item item-input">
-              <span class="input-label">Keywords</span>
-              <input type="text" ng-model="search_form.keywords" placeholder="Optional">
-            </label>
-            <label class="item item-input">
-              <span class="input-label">Radius</span>
-              <input type="number" ng-model="search_form.distance" placeholder="In miles">
-            </label>
             <div class="padding">
-              <button class="button button-full button-calm" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address}">Search</button>
+              <label class="item item-input">
+                <span class="input-label">Location</span>
+                <input id="address" type="text" ng-model="search_form.location.address" placeholder="e.g. Phoenix, AZ" ng-blur="geocodeLocation()" select-on-click>
+              </label>
+              <label class="item item-input">
+                <span class="input-label">Keywords</span>
+                <input type="text" ng-model="search_form.keywords" placeholder="Optional">
+              </label>
+              <label class="item item-input">
+                <span class="input-label">Radius</span>
+                <input type="number" ng-model="search_form.distance" placeholder="In miles">
+              </label>
+              <button class="button button-full button-calm" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address || geocoding}">Search</button>
             </div>
+          </div>
+        </content>
+      </div>
+    </script>
+
+    <script id="infoModal.html" type="text/ng-template">
+      <div class="modal">
+        <header class="bar bar-header bar-calm">
+          <h1 class="title">Information</h1>
+          <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeInfoModal()"></button>
+        </header>
+        <content has-header="true">
+          <div class="padding">
+            <div ng-bind-html="infoPartyContent"></div>
+
+            <div class="party-info-window">
+              <h1 class="party-header">{{eventInfo.name}}</h1>
+              <p class="party-meta">
+                <span>{{eventInfo.location.address}}</span> 
+                <span ng-bind-html="eventInfo.timeString">
+              </p> 
+              <hr> 
+              <div class="party-content">
+                <p ng-bind-html="eventInfo.description"></p>
+                <div ng-show="eventInfo.url">
+                  <p class="party-link">
+                    <button class="button button-full button-light" open-url="{{eventInfo.url}}">Click for more info</button>
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </content>
       </div>

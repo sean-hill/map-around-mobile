@@ -7,7 +7,7 @@
 }
 
 .disabled {
-	opacity: .3;
+	opacity: .5;
 }
 
 .loader {
@@ -35,9 +35,7 @@
 
 // Map styles //
 .party-info-window {
-  width: 200px;
-  max-height: 300px;
-  margin-right: 30px;
+  width: 100%;
 
   h1, p {
     font-family: $font-family-sans-serif;
@@ -45,7 +43,7 @@
 
   h1 {
     font-weight: normal;
-    font-size: 20px;
+    font-size: 20px !important;
   }
 
   hr {
@@ -54,7 +52,7 @@
   }
 
   .party-meta {
-    color: #BBB;
+    color: #555;
     margin-top: 5px;
   }
 
