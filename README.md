@@ -1,9 +1,6 @@
 map-around-mobile
 =================
 
-Find events going on around you, right from your smartphone.
-
-
 A simple [Ionic-based](http://ionicframework.com/) app. Finds events going on around you or near a location.
 
 To build, install cordova, then run:
