@@ -6103,6 +6103,9 @@ a.button {
 .disabled {
   opacity: .5; }
 
+.main-color {
+  color: #48b3cc !important; }
+
 .loader {
   position: absolute;
   top: -44px;
@@ -6126,12 +6129,15 @@ a.button {
   width: 100%; }
   .party-info-window h1, .party-info-window p {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .party-info-window p {
+    font-size: 16px; }
   .party-info-window h1 {
     font-weight: normal;
     font-size: 20px !important; }
   .party-info-window hr {
     border: none;
-    border-top: 1px solid #EEE; }
+    border-top: 1px solid #EEE;
+    margin: 18px 0px; }
   .party-info-window .party-meta {
     color: #555;
     margin-top: 5px; }

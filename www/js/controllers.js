@@ -3,22 +3,23 @@ angular.module('maparound.controllers', [])
 .controller('AppCtrl', function($scope, $timeout, $http, Modal, geocoder, eventful) {
 
   $scope.search_form = {location:{}};
+  $scope.maxEventsToLoad = 400;
 
-  $scope.geocodeLocation = function() {
+  mixpanel.track("Home Page Loaded");
 
-    $scope.geocoding = true;
+  $scope.geocodeSearchLocation = function(callback) {
 
-    if ($scope.search_form.location.address) {
-      geocoder.getGeo({address: $scope.search_form.location.address}, function(data){
+    geocoder.getGeo({address: $scope.search_form.location.address}, function(data){
 
-        $scope.geocoding = false;
+      if (data) {
 
-        if (data) {
-          $scope.search_form.location = data;
-          $scope.$apply();
-        }
-      })
-    }
+        $scope.search_form.location = data;
+        $scope.$apply();
+        if (callback) callback();
+
+      }
+
+    })
 
   }
 
@@ -27,7 +28,6 @@ angular.module('maparound.controllers', [])
     geocoder.getGeo({'latLng': location}, function(data){
       if (data) {
         $scope.search_form.location = data;
-        $scope.$apply();
         if (callback) callback();
       }
     })
@@ -36,26 +36,33 @@ angular.module('maparound.controllers', [])
 
   $scope.searchForEvents = function() {
 
-    // TODO: WAIT FOR GEOCODE TO BE DONE
-    // TODO: Only load a certain number of events, to many locks the phone
-
     if (!$scope.search_form.location.address) {
       return;
     }
 
     if (!$scope.search_form.distance) $scope.search_form.distance = 5;
 
-    $scope.closeSearchModal();
+    $scope.geocodeSearchLocation(function(){
 
-    $scope.showLoader = true;
-    $scope.loadingText = "Finding Events";
-    $scope.$apply();
+      $scope.closeSearchModal();
 
-    eventful.search($scope.search_form, 1, function(events, page_count){
-      $scope.$broadcast('eventfulDataChange', {events: events, page_count: page_count});
+      $scope.showLoader = true;
+      $scope.loadingText = "Finding Events";
+      if(!$scope.$$phase) {
+        $scope.$apply();
+      }
+
+      mixpanel.track("Searched Events", {
+        address: $scope.search_form.location.address
+        , keywords: $scope.search_form.keywords ? $scope.search_form.keywords : "None"
+        , distance: $scope.search_form.distance ? $scope.search_form.distance : "None"
+      });
+
+      eventful.search($scope.search_form, 1, function(events, page_count){
+        $scope.$broadcast('eventfulDataChange', {events: events, page_count: page_count});
+      });
+
     });
-
-
   }
 
   $scope.resetZoom = function() {
@@ -75,6 +82,10 @@ angular.module('maparound.controllers', [])
     $scope.$apply();
   }
 
+  $scope.setUserLocation = function(val) {
+    $scope.userLocation = val;
+  }
+
   $scope.selectMe = function(elem) {
     elem.select();
   }
@@ -90,9 +101,11 @@ angular.module('maparound.controllers', [])
   });
 
   $scope.openSearchModal = function() {
+    mixpanel.track("Opened search modal");
     $scope.searchModal.show();
   };
   $scope.closeSearchModal = function() {
+    mixpanel.track("Closed search modal");
     $scope.searchModal.hide();
   };
 
@@ -107,10 +120,12 @@ angular.module('maparound.controllers', [])
   });
 
   $scope.openInfoModal = function() {
+    mixpanel.track("Opened info modal");
     $scope.infoModal.show();
   };
 
   $scope.closeInfoModal = function() {
+    mixpanel.track("Closed info modal");
     $scope.infoModal.hide();
   };
 
@@ -123,59 +138,57 @@ angular.module('maparound.controllers', [])
   var markerSpider;
   var infoWindow;
 
+  $scope.partyMap = new google.maps.Map(document.getElementById('map-canvas'), {
+    center: new google.maps.LatLng(37.09024, -95.7128910),
+    zoom: 4,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    disableDefaultUI: true,
+    mapTypeControl: true,
+    mapTypeControlOptions: {
+      style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+      position: google.maps.ControlPosition.TOP_CENTER,
+      mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE]
+    }
+  });
 
+  $scope.partyMarkers = [];
 
+  $scope.setLoaderStatus(true);
+  $scope.setLoadingText("Getting Location");
 
-  $timeout(function(){
+  clientlocation.get(function(location){
 
-    $scope.partyMap = new google.maps.Map(document.getElementById('map-canvas'), {
-      center: new google.maps.LatLng(37.09024, -95.7128910),
-      zoom: 4,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      disableDefaultUI: true,
-      mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-        position: google.maps.ControlPosition.TOP_CENTER
-      }
-    });
+    $scope.initiateMapElements();
 
-    $scope.partyMap.addListener("zoom_changed", function(){
-      $scope.closeInfoModal();
-    });
+    if (location) {
 
-    $scope.partyMarkers = [];
+      $scope.partyMap.setCenter(location);
+      $scope.setUserLocation(location);
 
-    $scope.setLoaderStatus(true);
-    $scope.setLoadingText("Getting Location");
-
-    clientlocation.get(function(location){
-
-      $scope.initiateMapElements();
-
-      if (location) {
-        $scope.partyMap.setCenter(location);
+      $scope.setSearchFormLocation(location, function(){
         $scope.partyMap.setZoom(11);
-        $scope.userLocation = location;
-        $scope.setSearchFormLocation(location, function(){
-          $scope.searchForEvents();  
-        });
-      } else {
-        $scope.setLoaderStatus(false);
-        $scope.openSearchModal();
-      }
-    })
+        $scope.searchForEvents();  
+      });
+    } else {
+      mixpanel.track("No client location");
+      $scope.setLoaderStatus(false);
+      $scope.openSearchModal();
+    }
 
   });
 
-
   $scope.$on("resetZoom", function(e, data){
-    if ($scope.partyMap) $scope.partyMap.setZoom(11);
+    if ($scope.partyMap) {
+      mixpanel.track("Reset Zoom");
+      $scope.partyMap.setZoom(11);
+    }
   });
 
 
   $scope.$on("eventfulDataChange", function(e, data){
     
     var events = data.events;
+    var numEventsLoaded = events.length;
 
     if (!events.length) {
       alert("No events found, try different criteria");
@@ -208,8 +221,15 @@ angular.module('maparound.controllers', [])
 
     // Get the rest of the events
     for(var i = 2; i <= data.page_count; i++) {
+
       eventful.search($scope.search_form, i, function(events, page_c) {
-        $scope.addMarkersToMap(events);
+
+        numEventsLoaded += events.length;
+
+        if (numEventsLoaded <= $scope.maxEventsToLoad){
+          $scope.addMarkersToMap(events);
+        }
+        
       });
     }
 
@@ -217,7 +237,6 @@ angular.module('maparound.controllers', [])
 
   $scope.placeUserLocationMarker = function() {
     if ($scope.userLocation) {
-
       new google.maps.Marker({
         position: $scope.userLocation
         , icon: new google.maps.MarkerImage('img/client-location.svg', null, null, null, new google.maps.Size(25,25))

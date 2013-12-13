@@ -10,6 +10,10 @@
 	opacity: .5;
 }
 
+.main-color {
+  color: $calm !important;
+}
+
 .loader {
 	position: absolute;
 	top: -$bar-height;
@@ -41,6 +45,10 @@
     font-family: $font-family-sans-serif;
   }
 
+  p {
+    font-size: 16px;
+  }
+
   h1 {
     font-weight: normal;
     font-size: 20px !important;
@@ -49,6 +57,7 @@
   hr {
     border: none;
     border-top: 1px solid #EEE;
+    margin: 18px 0px;
   }
 
   .party-meta {

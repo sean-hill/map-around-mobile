@@ -12,8 +12,11 @@ angular.module('maparound.directives', [])
 	.directive('openUrl', function () {
 	    // Linker function
 	    return function (scope, element, attrs) {
+
+	    	var target = attrs.target || "_blank";
+
 	        element.bind('click', function () {
-	            window.open(attrs.openUrl, '_blank', 'location=yes');
+	            window.open(attrs.openUrl, target, 'location=yes');
 	        });
 	    };
 	})

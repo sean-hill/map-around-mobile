@@ -4,12 +4,22 @@
     <meta charset="utf-8">
     <title>Map Around</title>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="Find events going on around you or near a location.">
 
     <!-- ionic css -->
     <link href="css/ionic.css" rel="stylesheet">
 
-    <!-- your app's css -->
+    <!-- app's css -->
     <link href="css/app.css" rel="stylesheet">
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- mixpanel -->
+    <script>
+      (function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+      typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
+      b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
+      mixpanel.init("906bae84ae557eadd1581a7e92e6e3e8");
+    </script>
 
     <!-- ionic/angularjs scripts -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPTuWtdL0JlVUiscO9arznZVHGNmTaWvI&sensor=true"></script>
@@ -28,7 +38,7 @@
     <!-- cordova script -->
     <script src="cordova.js"></script>
 
-    <!-- your app's script -->
+    <!-- app's script -->
     <script src="js/app.js"></script>
     <script src="js/directives.js"></script>
     <script src="js/services.js"></script>
@@ -59,21 +69,21 @@
         </header>
         <content has-header="true">
           <div class="list">
-            <div class="padding">
-              <label class="item item-input">
-                <span class="input-label">Location</span>
-                <input id="address" type="text" ng-model="search_form.location.address" placeholder="e.g. Phoenix, AZ" ng-blur="geocodeLocation()" select-on-click>
-              </label>
-              <label class="item item-input">
-                <span class="input-label">Keywords</span>
-                <input type="text" ng-model="search_form.keywords" placeholder="Optional">
-              </label>
-              <label class="item item-input">
-                <span class="input-label">Radius</span>
-                <input type="number" ng-model="search_form.distance" placeholder="In miles">
-              </label>
-              <button class="button button-full button-calm" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address || geocoding}">Search</button>
-            </div>
+            <label class="item item-input">
+              <span class="input-label">Location</span>
+              <input id="address" type="text" ng-model="search_form.location.address" placeholder="e.g. Phoenix, AZ" select-on-click>
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Keywords</span>
+              <input type="text" ng-model="search_form.keywords" placeholder="Optional">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Radius</span>
+              <input type="number" ng-model="search_form.distance" placeholder="In miles">
+            </label>
+          </div>
+          <div class="padding">
+            <button class="button button-full button-light" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address}">Search</button>
           </div>
         </content>
       </div>
@@ -90,18 +100,21 @@
             <div ng-bind-html="infoPartyContent"></div>
 
             <div class="party-info-window">
-              <h1 class="party-header">{{eventInfo.name}}</h1>
+              <h1 class="party-header" style="margin-top: 10px">{{eventInfo.name}}</h1>
+              <hr>
               <p class="party-meta">
-                <span>{{eventInfo.location.address}}</span> 
+                <span>{{eventInfo.location.address}}</span>
+                <br>
                 <span ng-bind-html="eventInfo.timeString">
               </p> 
               <hr> 
               <div class="party-content">
-                <p ng-bind-html="eventInfo.description"></p>
+                <p ng-bind-html="eventInfo.description" style="margin-bottom: 17px"></p>
                 <div ng-show="eventInfo.url">
-                  <p class="party-link">
-                    <button class="button button-full button-light" open-url="{{eventInfo.url}}">Click for more info</button>
-                  </p>
+                  <div class="button-bar">
+                    <button ng-show="userLocation" class="button button-light" open-url="http://maps.google.com/maps?saddr={{userLocation.lat()}},{{userLocation.lng()}}&daddr={{eventInfo.location.latlng[1]}},{{eventInfo.location.latlng[0]}}">Get Directions</button>
+                    <button class="button button-light" open-url="{{eventInfo.url}}">More Info</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -110,6 +123,12 @@
         </content>
       </div>
     </script>
-
+    <script>
+      document.addEventListener('deviceready', function() {
+        setTimeout(function() {
+            navigator.splashscreen.hide();
+        }, 1200);
+      });
+    </script>
   </body>
 </html>

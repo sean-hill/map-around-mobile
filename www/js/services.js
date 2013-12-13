@@ -24,7 +24,7 @@ angular.module('maparound.services', [])
   .service('clientlocation', function() {
 
     this.get = function(callback) {
-
+      
       if (navigator.geolocation) {
 
         navigator.geolocation.getCurrentPosition(function (position) {
