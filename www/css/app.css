@@ -6111,7 +6111,7 @@ a.button {
   top: -44px;
   z-index: 100;
   width: 100%;
-  background: white;
+  background: rgba(255, 255, 255, 0.92);
   height: 44px;
   border-bottom: 1px solid #2b879c;
   text-align: center;
