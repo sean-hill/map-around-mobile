@@ -1,11 +1,13 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, $http, Modal, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $http, Modal, Admob, geocoder, eventful) {
 
   $scope.search_form = {location:{}};
   $scope.maxEventsToLoad = 400;
 
   mixpanel.track("Home Page Loaded");
+
+  Admob.init();
 
   $scope.geocodeSearchLocation = function(callback) {
 
@@ -192,6 +194,7 @@ angular.module('maparound.controllers', [])
 
     if (!events.length) {
       alert("No events found, try different criteria");
+      $scope.setLoaderStatus(false);
       $scope.openSearchModal();
       return;
     }

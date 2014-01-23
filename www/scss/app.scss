@@ -16,7 +16,6 @@
 
 .loader {
 	position: absolute;
-	top: -$bar-height;
 	z-index: 100;
 	width: 100%;
 	background: rgba(255, 255, 255, 0.92);
@@ -30,10 +29,11 @@
 		padding-top: 12px;
 	}
 
+  @include translate3d(0, -$bar-height, 0);
 	@include transition(all linear 200ms);
 
 	&.active {
-		top: 0px;
+		@include translate3d(0, 0, 0);
 	}
 }
 

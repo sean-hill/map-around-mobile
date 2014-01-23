@@ -6108,7 +6108,6 @@ a.button {
 
 .loader {
   position: absolute;
-  top: -44px;
   z-index: 100;
   width: 100%;
   background: rgba(255, 255, 255, 0.92);
@@ -6117,13 +6116,18 @@ a.button {
   text-align: center;
   color: #48b3cc !important;
   font-size: 15px !important;
+  -webkit-transform: translate3d(0, -44px, 0);
+  -moz-transform: translate3d(0, -44px, 0);
+  transform: translate3d(0, -44px, 0);
   -webkit-transition: all linear 200ms;
   -moz-transition: all linear 200ms;
   transition: all linear 200ms; }
   .loader .title {
     padding-top: 12px; }
   .loader.active {
-    top: 0px; }
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0); }
 
 .party-info-window {
   width: 100%; }
