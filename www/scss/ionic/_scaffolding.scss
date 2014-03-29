@@ -10,19 +10,11 @@
   @include box-sizing(border-box);
 }
 
-a {
-  -webkit-user-drag: none;
-  -webkit-tap-highlight-color: transparent;
-}
-img {
-  -webkit-user-drag: none;
-}
-
-body, .ionic-body {
+body,
+.ionic-body {
+  @include touch-callout(none);
   @include font-smoothing(antialiased);
-  -webkit-perspective: 1000;
-  -webkit-backface-visibility: hidden;
-  @incude text-size-adjust(none);
+  @include text-size-adjust(none);
   @include tap-highlight-transparent();
   @include user-select(none);
 
@@ -35,46 +27,50 @@ body, .ionic-body {
 
   margin: 0;
   padding: 0;
-  
+
   color: $base-color;
   word-wrap: break-word;
   font-size: $font-size-base;
   font-family: $font-family-base;
   line-height: $line-height-computed;
   text-rendering: optimizeLegibility;
+  -webkit-backface-visibility: hidden;
   -webkit-user-drag: none;
 }
 
-.content:before,
-.content:after {
-  // Uncollapse content margin if child elements DO have an margin
-  display: block;
-  overflow: hidden;
-  height: 0;
-  content: "\00a0"; // No-break space character
+body.grade-b,
+body.grade-c {
+  // disable optimizeLegibility for low end devices
+  text-rendering: auto;
 }
 
 .content {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  // used for content areas not using the content directive
+  position: relative;
 }
 
 .scroll-content {
+  position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-
-  position: absolute;
   overflow: hidden;
-  -webkit-perspective: 1000;
-  -webkit-backface-visibility: hidden;
 
   // Hide the top border if any
   margin-top: -1px;
 
   width: auto;
+  height: auto;
+}
+
+.scroll-view {
+  position: relative;
+  overflow: hidden;
+
+  // Hide the top border if any
+  margin-top: -1px;
+  height: 100%;
 }
 
 /**
@@ -85,45 +81,107 @@ body, .ionic-body {
   @include user-select(none);
   @include touch-callout(none);
   @include text-size-adjust(none);
-  @include translateZ(0);
   @include transform-origin(left, top);
-  -webkit-perspective: 1000;
   -webkit-backface-visibility: hidden;
 }
 
+// Scroll bar styles
+.scroll-bar {
+  position: absolute;
+  z-index: $z-index-scroll-bar;
+}
+// hide the scroll-bar during animations
+.ng-animate .scroll-bar {
+  visibility: hidden;
+}
+.scroll-bar-h {
+  right: 2px;
+  bottom: 3px;
+  left: 2px;
+  height: 3px;
+
+  .scroll-bar-indicator {
+    height: 100%;
+  }
+}
+
+.scroll-bar-v {
+  top: 2px;
+  right: 3px;
+  bottom: 2px;
+  width: 3px;
+
+  .scroll-bar-indicator {
+    width: 100%;
+  }
+}
+.scroll-bar-indicator {
+  position: absolute;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.3);
+  opacity: 1;
+
+
+  &.scroll-bar-fade-out {
+    @include transition(opacity 0.3s linear);
+    opacity: 0;
+  }
+}
+.grade-b .scroll-bar-indicator,
+.grade-c .scroll-bar-indicator {
+  // disable rgba background and border radius for low end devices
+  border-radius: 0;
+  background: #aaa;
+
+  &.scroll-bar-fade-out {
+    @include transition(none);
+  }
+}
+
+
 // Scroll refresher (for pull to refresh)
 .scroll-refresher {
+  position: absolute;
+  top: -60px;
+  right: 0;
+  left: 0;
   overflow: hidden;
-  margin-top: -60px;
+  margin: auto;
   height: 60px;
-  position: relative;
 
   .icon-refreshing {
-    display: none;
     @include animation-duration(1.5s);
+    display: none;
   }
 }
 
 .scroll-refresher-content {
-  position: relative;
+  position: absolute;
+  bottom: 15px;
+  left: 0;
   width: 100%;
-  height: 100%;
+  color: $scroll-refresh-icon-color;
   text-align: center;
+
+  font-size: 30px;
 }
 
 .ionic-refresher-content {
   position: absolute;
-  left: 0;
   bottom: 15px;
+  left: 0;
   width: 100%;
+  color: $scroll-refresh-icon-color;
   text-align: center;
 
   font-size: 30px;
-  color: $scroll-refresh-icon-color;
 
-  @include animation-duration(200ms);
-  @include animation-timing-function(linear);
-  @include animation-fill-mode(both);
+  .icon-pulling {
+    @include animation-name(refresh-spin-back);
+    @include animation-duration(200ms);
+    @include animation-timing-function(linear);
+    @include animation-fill-mode(both);
+  }
 }
 
 @keyframes refresh-spin {
@@ -134,6 +192,16 @@ body, .ionic-body {
 @-webkit-keyframes refresh-spin {
   0% {-webkit-transform: rotate(0); }
   100% {-webkit-transform: rotate(-180deg); }
+}
+
+@keyframes refresh-spin-back {
+  0% { transform: rotate(-180deg); }
+  100% { transform: rotate(0); }
+}
+
+@-webkit-keyframes refresh-spin-back {
+  0% {-webkit-transform: rotate(-180deg); }
+  100% {-webkit-transform: rotate(0); }
 }
 
 .scroll-refresher.active {
@@ -155,8 +223,31 @@ body, .ionic-body {
   }
 
   .ionic-refresher-content {
-    @include animation-name(refresh-spin);
+    i.icon.icon-pulling {
+      @include animation-name(refresh-spin);
+    }
   }
+}
+
+// Infinite scroll
+ion-infinite-scroll .scroll-infinite {
+  position: relative;
+  overflow: hidden;
+  margin-top: -70px;
+  height: 60px;
+}
+
+.scroll-infinite-content {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  width: 100%;
+  color: #666666;
+  text-align: center;
+  font-size: 30px; }
+
+ion-infinite-scroll.active .scroll-infinite {
+  margin-top: -30px;
 }
 
 .overflow-scroll {
@@ -191,30 +282,42 @@ body, .ionic-body {
 .has-subheader {
   top: $bar-height * 2;
 }
+.has-tabs-top {
+  top: $bar-height + $tabs-height;
+}
+.has-header.has-subheader.has-tabs-top {
+  top: 2 * $bar-height + $tabs-height;
+}
 
 .has-footer {
   bottom: $bar-height;
 }
 
-// Specify that a content area will have tabs
-.has-tabs {
-  bottom: 49px;
+.has-tabs,
+.bar-footer.has-tabs {
+  bottom: $tabs-height;
+}
+
+.has-footer.has-tabs {
+  bottom: $tabs-height + $bar-height;
 }
 
 // A full screen section with a solid background
 .pane {
-  position: fixed;
+  @include translate3d(0,0,0);
+  z-index: $z-index-pane;
 }
 .view {
-  position: absolute;
+  z-index: $z-index-view;
 }
-.pane, .view {
+.pane,
+.view {
+  position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1;
   width: 100%;
   height: 100%;
-  background-color: #fff;
+  background-color: $base-background-color;
 }

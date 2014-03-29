@@ -113,12 +113,12 @@ angular.module('maparound.services', [])
     
   })
 
-  .service('Admob', function(Platform) {
+  .service('Admob', function($ionicPlatform) {
 
     this.init = function() {
 
-      Platform.ready(function() {
-        
+      $ionicPlatform.ready(function() {
+
         if( window.plugins && window.plugins.AdMob ) {
 
             var adId = "ca-app-pub-6187866297038401/6133439772";
@@ -132,7 +132,8 @@ angular.module('maparound.services', [])
               }, 
               function() {
                 am.requestAd(
-                  { 'isTesting':false }, 
+                  { 'isTesting': true }, 
+                  // { 'isTesting': false }, 
                   function(){
                     am.showAd( true );
                   }, 
@@ -141,6 +142,7 @@ angular.module('maparound.services', [])
               }, 
               function(){ alert('Failed to create banner ad.'); }
             );
+
         } else {
           // alert('AdMob plugin not available/ready.');
         }

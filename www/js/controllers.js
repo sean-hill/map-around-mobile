@@ -1,6 +1,6 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, $http, Modal, Admob, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $http, $ionicModal, Admob, geocoder, eventful) {
 
   $scope.search_form = {location:{}};
   $scope.maxEventsToLoad = 400;
@@ -93,7 +93,7 @@ angular.module('maparound.controllers', [])
   }
 
   // Load search modal
-  Modal.fromTemplateUrl('searchModal.html', function(modal) {
+  $ionicModal.fromTemplateUrl('searchModal.html', function(modal) {
     $scope.searchModal = modal;
   }, {
     // Use our scope for the scope of the modal to keep it simple
@@ -112,7 +112,7 @@ angular.module('maparound.controllers', [])
   };
 
   // Load event info modal
-  Modal.fromTemplateUrl('infoModal.html', function(modal) {
+  $ionicModal.fromTemplateUrl('infoModal.html', function(modal) {
     $scope.infoModal = modal;
   }, {
     // Use our scope for the scope of the modal to keep it simple

@@ -8,6 +8,19 @@
   @include display-flex();
   @include flex(1);
   width: 100%;
+
+  &.button-bar-inline {
+    display: block;
+    width: auto;
+
+    @include clearfix();
+
+    > .button {
+      width: auto;
+      display: inline-block;
+      float: left;
+    }
+  }
 }
 
 .button-bar > .button {
@@ -25,6 +38,11 @@
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  &:before,
+  .icon:before {
+    line-height: 44px;
+  }
 
   &:first-child {
     border-radius: 2px 0px 0px 2px;

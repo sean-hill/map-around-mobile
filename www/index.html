@@ -6,9 +6,6 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="Find events going on around you or near a location.">
 
-    <!-- ionic css -->
-    <link href="css/ionic.css" rel="stylesheet">
-
     <!-- app's css -->
     <link href="css/app.css" rel="stylesheet">
     <link rel="shortcut icon" href="img/favicon.ico">
@@ -26,9 +23,8 @@
     <script src="js/ionic.js"></script>
     <script src="js/angular/angular.js"></script>
     <script src="js/angular/angular-animate.js"></script>
-    <script src="js/angular/angular-route.js"></script>
-    <script src="js/angular/angular-touch.js"></script>
     <script src="js/angular/angular-sanitize.js"></script>
+    <script src="js/angular-ui/angular-ui-router.js"></script>
     <script src="js/ionic-angular.js"></script>
     <script src="js/min/date-utils.js"></script>
     <script src="js/min/eventful.js"></script>
@@ -49,9 +45,9 @@
   <body ng-app="maparound" ng-controller="AppCtrl">
 
     <div class="bar bar-header bar-calm">
-      <button class="button button-icon icon ion-ios7-minus-outline" ng-click="resetZoom()"></button>
+      <button class="button button-icon ion-ios7-minus-outline" ng-click="resetZoom()"></button>
       <div class="h1 title">Map Around</div>
-      <button class="button button-icon icon ion-ios7-search" ng-click="openSearchModal()"></button>
+      <button class="button button-icon ion-ios7-search" ng-click="openSearchModal()"></button>
     </div>
 
     <div class="scroll-content has-header" ng-controller="MapCtrl">
@@ -63,11 +59,11 @@
 
     <script id="searchModal.html" type="text/ng-template">
       <div class="modal">
-        <header class="bar bar-header bar-calm">
+        <ion-header-bar class="bar-calm">
           <h1 class="title">Find Events</h1>
           <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeSearchModal()"></button>
-        </header>
-        <content has-header="true">
+        </ion-header-bar>
+        <ion-content has-header="true">
           <div class="list">
             <label class="item item-input">
               <span class="input-label">Location</span>
@@ -85,17 +81,17 @@
           <div class="padding">
             <button class="button button-full button-light" ng-click="searchForEvents()" ng-class="{disabled: !search_form.location.address}">Search</button>
           </div>
-        </content>
+        </ion-content>
       </div>
     </script>
 
     <script id="infoModal.html" type="text/ng-template">
       <div class="modal">
-        <header class="bar bar-header bar-calm">
+        <ion-header-bar class="bar-calm">
           <h1 class="title">Information</h1>
           <button class="button button-icon icon ion-ios7-close-empty" ng-click="closeInfoModal()"></button>
-        </header>
-        <content has-header="true">
+        </ion-header-bar>
+        <ion-content has-header="true">
           <div class="padding">
             <div ng-bind-html="infoPartyContent"></div>
 
@@ -120,7 +116,7 @@
             </div>
 
           </div>
-        </content>
+        </ion-content>
       </div>
     </script>
     <script>

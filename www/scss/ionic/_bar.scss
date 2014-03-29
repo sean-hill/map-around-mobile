@@ -6,11 +6,12 @@
 
 .bar {
   @include display-flex();
+  @include translate3d(0,0,0);
   @include user-select(none);
   position: absolute;
   right: 0;
   left: 0;
-  z-index: 10;
+  z-index: $z-index-bar;
 
   box-sizing: border-box;
   padding: $bar-padding-portrait;
@@ -98,7 +99,7 @@
     top: 0;
     right: 0;
     left: 0;
-    z-index: 0;
+    z-index: $z-index-bar-title;
     overflow: hidden;
 
     margin: 0 10px;
@@ -113,7 +114,7 @@
 
     font-size: $bar-title-font-size;
 
-    line-height: $bar-height - 2;
+    line-height: $bar-height;
 
     &.title-left {
       text-align: left;
@@ -128,46 +129,63 @@
   }
 
   .button {
-    z-index: 1;
+    z-index: $z-index-bar-button;
     padding: 0 $button-bar-button-padding;
     min-width: initial;
     min-height: $button-bar-button-height - 1;
-    height: $button-bar-button-height;
     font-size: $button-bar-button-font-size;
-    line-height: $button-bar-button-height - $button-border-width - 1;
+    font-weight: 400;
+    line-height: $button-bar-button-height;
 
-    .icon,
+    &.button-icon:before,
+    .icon:before,
     &.icon:before,
     &.icon-left:before,
     &.icon-right:before {
       padding-right: 2px;
       padding-left: 2px;
       font-size: $button-bar-button-icon-size;
-      line-height: $button-bar-button-height - $button-border-width - 1;
+      line-height: $button-bar-button-height;
     }
 
     &.button-icon {
-      .icon,
-      &.icon:before,
+      .icon:before,
+      &:before,
       &.icon-left:before,
       &.icon-right:before {
+        vertical-align: top;
+        font-size: $button-large-icon-size;
         line-height: $button-bar-button-height;
       }
     }
     &.button-clear {
-      font-size: 18px;
+      font-size: $bar-title-font-size;
+      font-weight: 300;
       padding-right: 2px;
       padding-left: 2px;
+
+      .icon:before,
+      &.icon:before,
+      &.icon-left:before,
+      &.icon-right:before {
+        font-size: $button-large-icon-size;
+        line-height: $button-bar-button-height;
+      }
+    }
+
+    &.back-button.active {
+      opacity: 1;
     }
   }
 
-  .button-bar > .button, .buttons > .button {
+  .button-bar > .button,
+  .buttons > .button {
     min-height: $button-bar-button-height - 1;
-    height: $button-bar-button-height;
-    line-height: $button-bar-button-height - 2;
+    line-height: $button-bar-button-height;
   }
 
-  .button-bar + .button, .button + .button-bar {
+  .button-bar + .button,
+  .button + .button-bar {
     margin-left: 5px;
   }
 
@@ -175,6 +193,7 @@
   .title + .button:last-child,
   > .button + .button:last-child,
   > .button.pull-right,
+  .buttons.pull-right, 
   .title + .buttons {
     position: absolute;
     top: 5px;
