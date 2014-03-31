@@ -1,6 +1,6 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, $http, $ionicModal, Admob, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $http, $ionicModal, $ionicScrollDelegate, $ionicLoading, $ionicPopup, Admob, geocoder, eventful) {
 
   $scope.search_form = {location:{}};
   $scope.maxEventsToLoad = 400;
@@ -39,6 +39,13 @@ angular.module('maparound.controllers', [])
   $scope.searchForEvents = function() {
 
     if (!$scope.search_form.location.address) {
+      $ionicPopup.alert({
+        title: "Oops! We need a location."
+        , content: "Please enter a location for your search."
+      }).then(function(res) {
+        // Maybe something here?
+        $scope.displaySearchBar();
+      });
       return;
     }
 
@@ -46,10 +53,10 @@ angular.module('maparound.controllers', [])
 
     $scope.geocodeSearchLocation(function(){
 
-      $scope.closeSearchModal();
+      $scope.hideSearchBar();
+      $scope.setLoaderStatus(true);
+      $scope.setLoadingText("Finding Events");
 
-      $scope.showLoader = true;
-      $scope.loadingText = "Finding Events";
       if(!$scope.$$phase) {
         $scope.$apply();
       }
@@ -72,11 +79,17 @@ angular.module('maparound.controllers', [])
   }
 
   $scope.setLoaderStatus = function(val) {
-    $scope.showLoader = val;
+    if (!$scope.loader) return;
+    if (val) {
+      $scope.loader.show();
+    } else {
+      $scope.loader.hide();
+    }
   }
 
   $scope.setLoadingText = function(val) {
-    $scope.loadingText = val;
+    if (!$scope.loader) return;
+    $scope.loader.setContent("<i class='icon ion-loading-c'></i> &nbsp;" + val + "...");
   }
 
   $scope.setInfoPartyContent = function(val) {
@@ -92,33 +105,21 @@ angular.module('maparound.controllers', [])
     elem.select();
   }
 
-  // Load search modal
-  $ionicModal.fromTemplateUrl('searchModal.html', function(modal) {
-    $scope.searchModal = modal;
-  }, {
-    // Use our scope for the scope of the modal to keep it simple
-    scope: $scope,
-    // The animation we want to use for the modal entrance
-    animation: 'slide-in-up'
-  });
-
-  $scope.openSearchModal = function() {
-    mixpanel.track("Opened search modal");
-    $scope.searchModal.show();
+  $scope.displaySearchBar = function() {
+    $scope.showSearchBar = true;
   };
-  $scope.closeSearchModal = function() {
-    mixpanel.track("Closed search modal");
-    $scope.searchModal.hide();
+
+  $scope.hideSearchBar = function() {
+    $scope.showSearchBar = false;
+    console.log("HIDDING SEARCH BAR");
   };
 
   // Load event info modal
-  $ionicModal.fromTemplateUrl('infoModal.html', function(modal) {
-    $scope.infoModal = modal;
-  }, {
-    // Use our scope for the scope of the modal to keep it simple
+  $ionicModal.fromTemplateUrl('infoModal.html', {
     scope: $scope,
-    // The animation we want to use for the modal entrance
     animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.infoModal = modal;
   });
 
   $scope.openInfoModal = function() {
@@ -129,7 +130,12 @@ angular.module('maparound.controllers', [])
   $scope.closeInfoModal = function() {
     mixpanel.track("Closed info modal");
     $scope.infoModal.hide();
+    $ionicScrollDelegate.scrollTop();
   };
+
+  $scope.loader = $ionicLoading.show({
+    content: 'Finding Events',
+  });
 
 })
 
@@ -174,7 +180,7 @@ angular.module('maparound.controllers', [])
     } else {
       mixpanel.track("No client location");
       $scope.setLoaderStatus(false);
-      $scope.openSearchModal();
+      $scope.displaySearchBar();
     }
 
   });
@@ -195,7 +201,7 @@ angular.module('maparound.controllers', [])
     if (!events.length) {
       alert("No events found, try different criteria");
       $scope.setLoaderStatus(false);
-      $scope.openSearchModal();
+      $scope.displaySearchBar();
       return;
     }
 
@@ -220,6 +226,7 @@ angular.module('maparound.controllers', [])
         $scope.partyMap.fitBounds(bounds);
       });
     }
+
     $scope.setLoaderStatus(false);
 
     // Get the rest of the events

@@ -1,3 +1,5 @@
+$stable: #F7F7F7;
+
 @import "ionic/ionic";
 
 .event-map {
@@ -14,27 +16,14 @@
   color: $calm !important;
 }
 
-.loader {
-	position: absolute;
-	z-index: 100;
-	width: 100%;
-	background: rgba(255, 255, 255, 0.92);
-	height: $bar-height;
-	border-bottom: 1px solid $bar-calm-active-border;
-	text-align: center;
-	color: $calm !important;
-	font-size: 15px !important;
+.bar-shown {
+  @include translate3d(0, $bar-height, 0);
+}
 
-	.title {
-		padding-top: 12px;
-	}
-
-  @include translate3d(0, -$bar-height, 0);
-	@include transition(all linear 200ms);
-
-	&.active {
-		@include translate3d(0, 0, 0);
-	}
+.bar-search {
+  position: absolute;
+  top: -$bar-height;
+  @include transition(all ease-in 100ms);
 }
 
 // Map styles //
