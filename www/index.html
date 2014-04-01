@@ -60,12 +60,12 @@
       <div id="map-canvas" class="event-map"></div>
       <div class="tabs tabs-icon-only">
         <a class="tab-item" ng-click="centerOnUserLocation()">
-          <i class="icon ion-ios7-navigate-outline" ng-class="{disabled: !userLocation || !partyMap}"></i>
+          <i class="icon ion-ios7-navigate-outline" ng-class="{disabled: !partyMap}"></i>
         </a>
-        <a class="tab-item" ng-click="showAppInfo()">
+        <a class="tab-item" ng-click="openAppInfoModal()">
           <i class="icon ion-ios7-information-outline"></i>
         </a>
-        <a class="tab-item">
+        <a class="tab-item" ng-click="openSearchSettingsModal()">
           <i class="icon ion-ios7-gear-outline"></i>
         </a>
       </div>
@@ -100,6 +100,59 @@
         </ion-content>
       </div>
     </script>
+
+    <script id="searchSettingsModal.html" type="text/ng-template">
+      <div class="modal">
+        <ion-header-bar class="bar-stable">
+          <button class="button button-clear button-calm" ng-click="closeSearchSettingsModal()">Close</button>
+          <h1 class="title">Settings</h1>
+        </ion-header-bar>
+        <ion-content has-header="true">
+          <div class="list">
+            <label class="item item-input">
+              <span class="input-label">Distance (MI)</span>
+              <input type="text" ng-model="search_form.distance" placeholder="e.g. 8">
+            </label>
+            <label class="item item-input">
+              <span class="input-label">Keywords</span>
+              <input type="text" ng-model="search_form.keywords" placeholder="e.g. Jazz">
+            </label>
+          </div>
+        </ion-content>
+      </div>
+    </script>
+
+    <script id="appInfoModal.html" type="text/ng-template">
+      <div class="modal">
+        <ion-header-bar class="bar-stable">
+          <button class="button button-clear button-calm" ng-click="closeAppInfoModal()">Close</button>
+          <h1 class="title">About</h1>
+        </ion-header-bar>
+        <ion-content has-header="true">
+          <div class="list card">
+            <div class="item item-avatar">
+              <img src="/img/current-location.svg" width="32">
+              <h2>Map Around</h2>
+              <p>Version 1.0.0</p>
+            </div>
+            <div class="item item-body">
+              <p style="margin-top: 0px">Find Events going on around you or a location.</p>
+            </div>
+            <div class="item tabs tabs-secondary tabs-icon-left">
+              <a class="tab-item" href="#">
+                <i class="icon ion-ios7-email-outline"></i>
+                Support
+              </a>
+              <a class="tab-item" href="#">
+                <i class="icon ion-ios7-upload-outline"></i>
+                Share
+              </a>
+            </div>
+          </div>
+        </ion-content>
+      </div>
+    </script>
+
     <script>
       document.addEventListener('deviceready', function() {
         setTimeout(function() {

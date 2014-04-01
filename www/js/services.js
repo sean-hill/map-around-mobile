@@ -92,6 +92,10 @@ angular.module('maparound.services', [])
         , mature: "safe"
       };
 
+      if (search_form.keywords) {
+        eventfulOptions.keywords = search_form.keywords;
+      }
+
       EVDB.API.call("/events/search", eventfulOptions, function(data) {
 
         var eventFulEvents = [];
@@ -108,7 +112,7 @@ angular.module('maparound.services', [])
         }
 
         callback(eventFulEvents, data.page_count);
-        
+
       });      
 
     };

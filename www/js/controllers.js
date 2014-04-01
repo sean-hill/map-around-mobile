@@ -113,6 +113,10 @@ angular.module('maparound.controllers', [])
       $scope.$broadcast("center-on-user");
     }
 
+    $scope.showAppInfo = function() {
+
+    }
+
     $scope.selectMe = function(elem) {
       elem.select();
     }
@@ -144,6 +148,42 @@ angular.module('maparound.controllers', [])
       $ionicScrollDelegate.scrollTop();
     };
 
+    // Search Settings Modal
+    $ionicModal.fromTemplateUrl('searchSettingsModal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.searchSettingsModal = modal;
+    });
+
+    $scope.openSearchSettingsModal = function() {
+      mixpanel.track("Opened Search Settings Modal");
+      $scope.searchSettingsModal.show();
+    };
+
+    $scope.closeSearchSettingsModal = function() {
+      mixpanel.track("Closed Search Settings Modal");
+      $scope.searchSettingsModal.hide();
+    };
+
+    // App Info Modal
+    $ionicModal.fromTemplateUrl('appInfoModal.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.appInfoModal = modal;
+    });
+
+    $scope.openAppInfoModal = function() {
+      mixpanel.track("Opened App Info Modal");
+      $scope.appInfoModal.show();
+    };
+
+    $scope.closeAppInfoModal = function() {
+      mixpanel.track("Closed App Info Modal");
+      $scope.appInfoModal.hide();
+    };
+
     $scope.loader = $ionicLoading.show({
       content: 'Finding Events',
     });
@@ -153,7 +193,7 @@ angular.module('maparound.controllers', [])
 })
 
 // A simple controller that fetches a list of data
-.controller('MapCtrl', function($scope, $timeout, $ionicPlatform, clientlocation, eventful) {
+.controller('MapCtrl', function($scope, $timeout, $ionicPlatform, $ionicPopup, clientlocation, eventful) {
 
   var markerCluster;
   var markerSpider;
@@ -213,10 +253,23 @@ angular.module('maparound.controllers', [])
     });
 
     $scope.$on("center-on-user", function(){
-      console.log("CENTERING");
-      if ($scope.userLocation && $scope.partyMap) {
-        $scope.partyMap.panTo($scope.userLocation);
+
+      if ($scope.partyMap) {
+
+        $scope.setLoadingText("Getting Location");
+        $scope.setLoaderStatus(true);
+
+        clientlocation.get(function(location){
+
+          $scope.userLocation = location;
+          $scope.setLoaderStatus(false);
+          $scope.partyMap.panTo($scope.userLocation);
+          if (!$scope.$$phase) $scope.$apply();
+
+        });
+
       }
+
     });
 
     $scope.$on("eventfulDataChange", function(e, data){
