@@ -123,7 +123,7 @@ angular.module('maparound.services', [])
 
     this.init = function() {
 
-      if( window.plugins && window.plugins.AdMob ) {
+      if (window.plugins && window.plugins.AdMob) {
 
           var adId = "ca-app-pub-6187866297038401/6133439772";
           var am = window.plugins.AdMob;
@@ -152,5 +152,37 @@ angular.module('maparound.services', [])
       }
 
     };
+  })
+
+  .service('Email', function() {
+
+    this.isAvailable = function() {
+
+      if (window.plugins && window.plugin.email && window.plugin.email.isServiceAvailable) {
+        return true;
+      } else {
+        return false;
+      }
+
+    };
+
+    this.composeSupport = function(supportType) {
+
+      window.plugin.email.open({
+        to:      ['sean.pingplot.test@gmail.com'],
+        subject: 'Map Around: ' + supportType
+      });
+
+    };
+
+    this.composeShare = function(supportType) {
+
+      window.plugin.email.open({
+        subject: 'Check out Map Around!',
+        body: "I've been using Map Around to find events near me. How about you check it out too at http://maparoundapp.com!"
+      });
+
+    };
+
   })
 ;

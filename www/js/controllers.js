@@ -1,6 +1,6 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, $ionicPlatform, $ionicModal, $ionicScrollDelegate, $ionicLoading, $ionicPopup, Admob, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $ionicPlatform, $ionicModal, $ionicScrollDelegate, $ionicLoading, $ionicPopup, $ionicActionSheet, Admob, Email, geocoder, eventful) {
 
   $ionicPlatform.ready(function(){
 
@@ -10,6 +10,8 @@ angular.module('maparound.controllers', [])
     mixpanel.track("Home Page Loaded");
 
     Admob.init();
+
+    $scope.canSendEmails = Email.isAvailable();
 
     $scope.geocodeSearchLocation = function(callback) {
 
@@ -27,7 +29,7 @@ angular.module('maparound.controllers', [])
 
       })
 
-    }
+    };
 
     $scope.setSearchFormLocation = function(location, callback) {
 
@@ -40,7 +42,7 @@ angular.module('maparound.controllers', [])
         }
       })
 
-    }
+    };
 
     $scope.searchForEvents = function() {
 
@@ -80,11 +82,11 @@ angular.module('maparound.controllers', [])
         });
 
       });
-    }
+    };
 
     $scope.resetZoom = function() {
       $scope.$broadcast('resetZoom');
-    }
+    };
 
     $scope.setLoaderStatus = function(val) {
       if (!$scope.loader) return;
@@ -93,12 +95,12 @@ angular.module('maparound.controllers', [])
       } else {
         $scope.loader.hide();
       }  
-    }
+    };
 
     $scope.setLoadingText = function(val) {
       if (!$scope.loader) return;
       $scope.loader.setContent("<i class='icon ion-loading-c'></i> &nbsp;" + val + "...");
-    }
+    };
 
     $scope.setInfoPartyContent = function(val) {
       $scope.eventInfo = val;
@@ -107,19 +109,15 @@ angular.module('maparound.controllers', [])
 
     $scope.setUserLocation = function(val) {
       $scope.userLocation = val;
-    }
+    };
 
     $scope.centerOnUserLocation = function() {
       $scope.$broadcast("center-on-user");
-    }
-
-    $scope.showAppInfo = function() {
-
-    }
+    };
 
     $scope.selectMe = function(elem) {
       elem.select();
-    }
+    };
 
     $scope.displaySearchBar = function() {
       $scope.showSearchBar = true;
@@ -127,6 +125,38 @@ angular.module('maparound.controllers', [])
 
     $scope.hideSearchBar = function() {
       $scope.showSearchBar = false;
+    };
+
+    $scope.emailSupport = function() {
+
+      var supportTypes = [
+        { text: 'Question' },
+        { text: 'Request' },
+        { text: 'Bug Report' },
+        { text: 'Other' },
+      ];
+
+      if (!$scope.canSendEmails) {
+        return;
+      }
+
+      $ionicActionSheet.show({
+        buttons: supportTypes,
+        titleText: 'Support Type',
+        destructiveText: 'Cancel',
+        buttonClicked: function(index) {
+          Email.composeSupport(supportTypes[index].text);
+          return true;
+        },
+        destructiveButtonClicked: function() {
+          return true;
+        }
+      });
+
+    };
+
+    $scope.emailShare = function() {
+      Email.composeShare();
     };
 
     // Load event info modal

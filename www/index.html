@@ -131,19 +131,19 @@
         <ion-content has-header="true">
           <div class="list card">
             <div class="item item-avatar">
-              <img src="/img/current-location.svg" width="32">
+              <img src="https://dl.dropboxusercontent.com/u/97539058/Map%20Around/current-location.svg" width="32">
               <h2>Map Around</h2>
               <p>Version 1.0.0</p>
             </div>
             <div class="item item-body">
               <p style="margin-top: 0px">Find Events going on around you or a location.</p>
             </div>
-            <div class="item tabs tabs-secondary tabs-icon-left">
-              <a class="tab-item" href="#">
+            <div class="item tabs tabs-secondary tabs-icon-left" ng-show="canSendEmails">
+              <a class="tab-item" href="#" ng-click="emailSupport()">
                 <i class="icon ion-ios7-email-outline"></i>
                 Support
               </a>
-              <a class="tab-item" href="#">
+              <a class="tab-item" href="#" ng-click="emailShare()">
                 <i class="icon ion-ios7-upload-outline"></i>
                 Share
               </a>
