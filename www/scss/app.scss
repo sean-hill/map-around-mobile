@@ -5,7 +5,7 @@ $stable: #F7F7F7;
 .event-map {
 	height: 100%;
 	width: 100%;
-	box-sizing: border-box;
+	@include box-sizing(border-box);
 }
 
 .disabled {

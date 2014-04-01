@@ -58,6 +58,17 @@
 
     <div class="scroll-content has-header" ng-controller="MapCtrl">
       <div id="map-canvas" class="event-map"></div>
+      <div class="tabs tabs-icon-only">
+        <a class="tab-item" ng-click="centerOnUserLocation()">
+          <i class="icon ion-ios7-navigate-outline" ng-class="{disabled: !userLocation || !partyMap}"></i>
+        </a>
+        <a class="tab-item" ng-click="showAppInfo()">
+          <i class="icon ion-ios7-information-outline"></i>
+        </a>
+        <a class="tab-item">
+          <i class="icon ion-ios7-gear-outline"></i>
+        </a>
+      </div>
     </div>
 
     <script id="infoModal.html" type="text/ng-template">
