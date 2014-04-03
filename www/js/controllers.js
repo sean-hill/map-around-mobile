@@ -11,7 +11,10 @@ angular.module('maparound.controllers', [])
 
     Admob.init();
 
-    $scope.canSendEmails = Email.isAvailable();
+    Email.isAvailable(function(canEmail){
+      $scope.canSendEmails = canEmail;
+    });
+    
     $scope.canShareSocially = Social.isAvailable();
 
     $scope.geocodeSearchLocation = function(callback) {

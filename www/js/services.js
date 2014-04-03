@@ -156,12 +156,14 @@ angular.module('maparound.services', [])
 
   .service('Email', function() {
 
-    this.isAvailable = function() {
+    this.isAvailable = function(callback) {
 
-      if (window.plugins && window.plugin.email && window.plugin.email.isServiceAvailable) {
-        return true;
+      if (window.plugin && window.plugin.email && window.plugin.email.isServiceAvailable) {
+        window.plugin.email.isServiceAvailable(function(isAvailable){
+          callback(isAvailable);
+        })
       } else {
-        return false;
+        return callback(false);
       }
 
     };
