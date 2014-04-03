@@ -138,12 +138,12 @@
             <div class="item item-body">
               <p style="margin-top: 0px">Find Events going on around you or a location.</p>
             </div>
-            <div class="item tabs tabs-secondary tabs-icon-left" ng-show="canSendEmails">
-              <a class="tab-item" href="#" ng-click="emailSupport()">
+            <div class="item tabs tabs-secondary tabs-icon-left" ng-show="canSendEmails || canShareSocially">
+              <a class="tab-item" href="#" ng-show="canSendEmails" ng-click="emailSupport()">
                 <i class="icon ion-ios7-email-outline"></i>
                 Support
               </a>
-              <a class="tab-item" href="#" ng-click="emailShare()">
+              <a class="tab-item" href="#" ng-show="canShareSocially" ng-click="shareMapAround()">
                 <i class="icon ion-ios7-upload-outline"></i>
                 Share
               </a>

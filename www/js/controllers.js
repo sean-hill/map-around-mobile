@@ -1,6 +1,6 @@
 angular.module('maparound.controllers', [])
 
-.controller('AppCtrl', function($scope, $timeout, $ionicPlatform, $ionicModal, $ionicScrollDelegate, $ionicLoading, $ionicPopup, $ionicActionSheet, Admob, Email, geocoder, eventful) {
+.controller('AppCtrl', function($scope, $timeout, $ionicPlatform, $ionicModal, $ionicScrollDelegate, $ionicLoading, $ionicPopup, $ionicActionSheet, Admob, Email, Social, geocoder, eventful) {
 
   $ionicPlatform.ready(function(){
 
@@ -12,6 +12,7 @@ angular.module('maparound.controllers', [])
     Admob.init();
 
     $scope.canSendEmails = Email.isAvailable();
+    $scope.canShareSocially = Social.isAvailable();
 
     $scope.geocodeSearchLocation = function(callback) {
 
@@ -155,8 +156,8 @@ angular.module('maparound.controllers', [])
 
     };
 
-    $scope.emailShare = function() {
-      Email.composeShare();
+    $scope.shareMapAround = function() {
+      Social.share();
     };
 
     // Load event info modal

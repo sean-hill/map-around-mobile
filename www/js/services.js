@@ -175,12 +175,28 @@ angular.module('maparound.services', [])
 
     };
 
-    this.composeShare = function(supportType) {
+  })
 
-      window.plugin.email.open({
-        subject: 'Check out Map Around!',
-        body: "I've been using Map Around to find events near me. How about you check it out too at http://maparoundapp.com!"
-      });
+  .service('Social', function() {
+
+    this.isAvailable = function() {
+
+      if (window.socialmessage) {
+        return true;
+      } else {
+        return false;
+      }
+
+    };
+
+    this.share = function() {
+
+      var message = {
+        text: "Find events going on around you with the ease of your smartphone.",
+        url: "http://www.maparoundapp.com"
+      };
+
+      window.socialmessage.send(message);
 
     };
 
